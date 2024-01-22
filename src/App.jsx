@@ -1,5 +1,6 @@
 import Editor from "./Editor.jsx";
-import {useState} from "react";
+import {useEffect, useState} from "react";
+import Database from "tauri-plugin-sql-api";
 
 function App() {
 
@@ -10,6 +11,17 @@ function App() {
             <button className="btn btn-sm">Delete me</button>
         </div>
     );
+
+    async function createDB() {
+        const loadedDB = await Database.load('sqlite:test.db');
+        console.log(loadedDB)
+    }
+
+    async function loadNotes() {}
+
+    useEffect(() => {
+        createDB();
+    }, []);
 
     return (
         <div className="bg-gray-700 h-screen p-2">
