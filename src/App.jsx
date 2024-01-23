@@ -2,15 +2,22 @@ import Editor from "./Editor.jsx";
 import {useEffect, useState} from "react";
 import Database from "tauri-plugin-sql-api";
 import {addNoteDB, getSearch, removeNoteDB} from "./functions/db.js";
+import {invoke} from "@tauri-apps/api";
 
 function App() {
 
     const [notes, setNotes] = useState([]);
     const [db, setDB] = useState("")
     const noteItems = notes.map((item) =>
-        <div className="flex flex-row justify-between items-center bg-green-200 border-4 border-green-700">
-            <div className="bg-green-50 cursor-pointer w-full h-full"><h2>{item.note_text}</h2></div>
-            <button className="btn btn-sm" onClick={() => {handleRemoveNote(item.note_id)}}>Delete me</button>
+        <div key={item.note_id}
+             className="flex flex-row justify-between items-center bg-green-200 border-4 border-green-700">
+            <div className="bg-green-50 cursor-pointer w-full h-full min-h-6" onClick={async () => {
+                await handleOpenWindow(item.note_id)
+            }}><h2>{item.note_text}</h2></div>
+            <button className="btn btn-sm" onClick={() => {
+                handleRemoveNote(item.note_id)
+            }}>Delete me
+            </button>
         </div>
     );
 
@@ -46,6 +53,10 @@ function App() {
         await loadNotes(db);
     }
 
+    async function handleOpenWindow(uuid) {
+        await invoke("open_editor", {editorId: String(uuid)})
+    }
+
     useEffect(() => {
         createDB();
     }, []);
@@ -54,7 +65,10 @@ function App() {
         <div className="bg-gray-700 h-screen p-2">
             <div className="flex flex-row justify-between items-center">
                 <h1 className="text-white font-bold">All notes</h1>
-                <button className="btn btn-sm" onClick={() => {addNote()}}>Add notes</button>
+                <button className="btn btn-sm" onClick={() => {
+                    addNote()
+                }}>Add notes
+                </button>
             </div>
             <input className="my-2 w-full input" onChange={(e) => {
                 handleSearch(e)

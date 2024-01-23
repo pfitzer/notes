@@ -1,14 +1,34 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {invoke} from "@tauri-apps/api";
 import {writeText} from "@tauri-apps/api/clipboard";
 import {
     isPermissionGranted, requestPermission, sendNotification
 } from "@tauri-apps/api/notification";
+import {useLoaderData} from "react-router-dom";
+import Database from "tauri-plugin-sql-api";
+
+export async function loader({params}) {
+    const noteID = params.noteID;
+    return {noteUUID: noteID}
+}
 
 function Editor() {
-    const [note, setNote] = useState("Hello")
+    const {noteUUID} = useLoaderData();
+    const [note, setNote] = useState("")
     const [isRendered, setRender] = useState(false)
     const [markdownHtml, setMarkdownHtml] = useState("")
+    const [db, setDB] = useState("")
+
+    useEffect(() => {
+        loadNoteFromDB();
+    })
+
+    async function loadNoteFromDB() {
+        const loadedDB = await Database.load("sqlite:test.db")
+        const result = await loadedDB.select("SELECT * FROM notes WHERE  note_id = $1;", [noteUUID]);
+        setNote(result[0].note_text);
+        setDB(loadedDB);
+    }
 
     async function renderMarkdown() {
         if (!isRendered) {
