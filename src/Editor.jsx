@@ -101,7 +101,6 @@ function Editor() {
                             permissionGranted = permission === "granted";
                         }
                         if (permissionGranted) {
-                            console.log('granted');
                             sendNotification({title: "Tauri", body: "Copy text."});
                         }
                     }}>Copy
