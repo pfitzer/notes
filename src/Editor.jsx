@@ -11,6 +11,7 @@ import {listen} from "@tauri-apps/api/event";
 import {save} from "@tauri-apps/api/dialog";
 import {writeTextFile} from "@tauri-apps/api/fs";
 import {DBNAME} from "./functions/constants.js";
+import MDEditor from '@uiw/react-md-editor';
 
 export async function loader({params}) {
     const noteID = params.noteID;
@@ -34,7 +35,7 @@ function Editor() {
             setEventPayload({payload: e.payload, id: e.id});
         });
 
-        return() => {
+        return () => {
             if (unlisten) {
                 unlisten.then(resolvedUnlisten => typeof resolvedUnlisten === 'function' && resolvedUnlisten());
             }
@@ -115,9 +116,18 @@ function Editor() {
             {isRendered ?
                 <div className="prose" dangerouslySetInnerHTML={markdownHtml}></div>
                 :
-                <textarea value={note} onChange={(e) => {
-                    setNote(e.target.value)
-                }} className="w-full" rows={20}/>
+                <div className="w-full h-full">
+                    <MDEditor
+                        value={note}
+                        height={450}
+                        preview="edit"
+                        visibleDragbar={false}
+                        textareaProps={{rows: 50, placeholder: "Please enter Markdown text"}}
+                        onChange={(value, viewUpdate) => {
+                            setNote(value);
+                        }}
+                    />
+                </div>
             }
         </div>
     )

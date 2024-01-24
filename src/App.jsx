@@ -9,12 +9,13 @@ function App() {
 
     const [notes, setNotes] = useState([]);
     const [db, setDB] = useState("")
+    let headline;
     const noteItems = notes.map((item) =>
         <div key={item.note_id}
              className="p-1 flex flex-row justify-between items-center bg-green-700">
             <div className="bg-green-200 cursor-pointer w-full h-full min-h-6" onClick={async () => {
                 await handleOpenWindow(item.note_id)
-            }}>{item.note_text}</div>
+            }}>{item.note_text.split('\n')[0]}</div>
             <button className="btn btn-sm btn-square btn-ghost" onClick={() => {
                 handleRemoveNote(item.note_id)
             }}>
