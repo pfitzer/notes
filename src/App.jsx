@@ -3,6 +3,7 @@ import Database from "tauri-plugin-sql-api";
 import {addNoteDB, getSearch, removeNoteDB} from "./functions/db.js";
 import {invoke} from "@tauri-apps/api";
 import {listen} from "@tauri-apps/api/event";
+import {DBNAME} from "./functions/constants.js";
 
 function App() {
 
@@ -56,7 +57,7 @@ function App() {
     }, [db, listOfOpenWindows]);
 
     async function createDB(db) {
-        const loadedDB = await Database.load('sqlite:test.db');
+        const loadedDB = await Database.load('sqlite:' + DBNAME);
         const _first_load = await loadedDB.execute(
             "CREATE TABLE IF NOT EXISTS notes (note_id CHAR NOT NULL PRIMARY KEY, note_text TEXT DEAFULT NULL);"
         );

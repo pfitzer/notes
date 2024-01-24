@@ -10,6 +10,7 @@ import {updateNoteDB} from "./functions/db.js";
 import {listen} from "@tauri-apps/api/event";
 import {save} from "@tauri-apps/api/dialog";
 import {writeTextFile} from "@tauri-apps/api/fs";
+import {DBNAME} from "./functions/constants.js";
 
 export async function loader({params}) {
     const noteID = params.noteID;
@@ -67,7 +68,7 @@ function Editor() {
     }
 
     async function loadNoteFromDB() {
-        const loadedDB = await Database.load("sqlite:test.db")
+        const loadedDB = await Database.load("sqlite:" + DBNAME);
         const result = await loadedDB.select("SELECT * FROM notes WHERE  note_id = $1;", [noteUUID]);
         setNote(result[0].note_text);
         setDB(loadedDB);
