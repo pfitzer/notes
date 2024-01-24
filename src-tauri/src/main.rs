@@ -2,7 +2,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 
-use tauri::Window;
+use tauri::{CustomMenuItem, Menu, Submenu, Window};
 
 fn main() {
     tauri::Builder::default()
@@ -20,8 +20,21 @@ fn convert_markdown(text: &str) -> String {
 
 #[tauri::command]
 async fn open_editor(handle: tauri::AppHandle, editor_id: &str) -> Result<(), tauri::Error> {
-    let _editor_window: Window = tauri::WindowBuilder::new(
-        &handle, editor_id, tauri::WindowUrl::App(("editor/".to_string() + editor_id).parse().unwrap())
-    ).build().unwrap();
+    let editor_window: Window = tauri::WindowBuilder::new(
+        &handle, editor_id, tauri::WindowUrl::App(("editor/".to_string() + editor_id).parse().unwrap()),
+    )
+        .menu(Menu::new().add_submenu(
+            Submenu::new(
+                "File", Menu::new()
+                    .add_item(CustomMenuItem::new(
+                        "export", "Export File",
+                    )
+                        .accelerator("cmdOrControl+E")
+                    ),
+            )))
+        .build()
+        .unwrap();
+
+    editor_window.set_title("Editor").unwrap();
     Ok(())
 }

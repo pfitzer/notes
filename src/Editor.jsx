@@ -6,6 +6,10 @@ import {
 } from "@tauri-apps/api/notification";
 import {useLoaderData} from "react-router-dom";
 import Database from "tauri-plugin-sql-api";
+import {updateNoteDB} from "./functions/db.js";
+import {listen} from "@tauri-apps/api/event";
+import {save} from "@tauri-apps/api/dialog";
+import {writeTextFile} from "@tauri-apps/api/fs";
 
 export async function loader({params}) {
     const noteID = params.noteID;
@@ -18,10 +22,49 @@ function Editor() {
     const [isRendered, setRender] = useState(false)
     const [markdownHtml, setMarkdownHtml] = useState("")
     const [db, setDB] = useState("")
+    const [menuEventPayload, setEventPayload] = useState("");
 
     useEffect(() => {
         loadNoteFromDB();
-    })
+
+        let unlisten;
+
+        unlisten = listen("tauri://menu", (e) => {
+            setEventPayload({payload: e.payload, id: e.id});
+        });
+
+        return() => {
+            if (unlisten) {
+                unlisten.then(resolvedUnlisten => typeof resolvedUnlisten === 'function' && resolvedUnlisten());
+            }
+        }
+    }, [])
+
+    useEffect(() => {
+        if (menuEventPayload === "") {
+            return;
+        }
+        const menuPayload = menuEventPayload.payload;
+        switch (menuPayload) {
+            case "export":
+                saveToFile();
+                break;
+            default:
+                break;
+        }
+    }, [menuEventPayload]);
+
+    async function saveToFile() {
+        try {
+            let filePath = await save({
+                filters: [{name: "Markdown", extensions: ["md"]}]
+            });
+
+            await writeTextFile({contents: note, path: filePath});
+        } catch (e) {
+            console.log(e);
+        }
+    }
 
     async function loadNoteFromDB() {
         const loadedDB = await Database.load("sqlite:test.db")
@@ -58,9 +101,14 @@ function Editor() {
                             permissionGranted = permission === "granted";
                         }
                         if (permissionGranted) {
+                            console.log('granted');
                             sendNotification({title: "Tauri", body: "Copy text."});
                         }
                     }}>Copy
+                    </button>
+                    <button className="btn btn-sm join-item" onClick={async () => {
+                        await updateNoteDB(db, noteUUID, note);
+                    }}>Save
                     </button>
                 </div>
             </div>

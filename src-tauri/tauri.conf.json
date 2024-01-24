@@ -21,6 +21,15 @@
       },
       "notification": {
         "all": true
+      },
+      "dialog": {
+        "save": true
+      },
+      "fs":{
+        "writeFile": true
+      },
+      "path": {
+        "all": true
       }
     },
     "bundle": {
@@ -42,9 +51,9 @@
       {
         "fullscreen": false,
         "resizable": true,
-        "title": "notes",
-        "width": 800,
-        "height": 600
+        "title": "Notes",
+        "width": 300,
+        "height": 400
       }
     ]
   }
