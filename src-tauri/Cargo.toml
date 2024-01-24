@@ -2,9 +2,9 @@
 name = "notes"
 version = "0.2.0"
 description = "A Tauri App"
-authors = ["you"]
-license = ""
-repository = ""
+authors = ["Michael Pfister <michael@mp-development.de>"]
+license = "MIT"
+repository = "https://github.com/pfitzer/notes"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
