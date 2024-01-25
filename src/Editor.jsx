@@ -20,7 +20,7 @@ export async function loader({params}) {
 
 function Editor() {
     const {noteUUID} = useLoaderData();
-    const [note, setNote] = useState("")
+    const [note, setNote] = useState({})
     const [isRendered, setRender] = useState(false)
     const [markdownHtml, setMarkdownHtml] = useState("")
     const [db, setDB] = useState("")
@@ -56,6 +56,12 @@ function Editor() {
         }
     }, [menuEventPayload]);
 
+    function updateTitle(e) {
+        note.title = e.target.value;
+        // setNote(note);
+        console.log(note);
+    }
+
     async function saveToFile() {
         try {
             let filePath = await save({
@@ -71,7 +77,7 @@ function Editor() {
     async function loadNoteFromDB() {
         const loadedDB = await Database.load("sqlite:" + DBNAME);
         const result = await loadedDB.select("SELECT * FROM notes WHERE  note_id = $1;", [noteUUID]);
-        setNote(result[0].note_text);
+        setNote(result[0]);
         setDB(loadedDB);
     }
 
@@ -96,7 +102,7 @@ function Editor() {
                         <div className="swap-off">MD</div>
                     </label>
                     <button className="btn btn-sm join-item" onClick={async () => {
-                        await writeText(note);
+                        await writeText(note.note_text);
                         let permissionGranted = await isPermissionGranted()
                         if (!permissionGranted) {
                             const permission = await requestPermission();
@@ -117,14 +123,19 @@ function Editor() {
                 <div className="prose" dangerouslySetInnerHTML={markdownHtml}></div>
                 :
                 <div className="w-full h-full">
+                    <label className="mb-2" htmlFor="title">Title</label>
+                    <input className="p-2 mb-2" name="title" id="title" value={note.title ? note.title : ''} onChange={(e) => {
+                        updateTitle(e);
+                    }} />
                     <MDEditor
-                        value={note}
+                        value={note.note_text}
                         height={450}
                         preview="edit"
                         visibleDragbar={false}
                         textareaProps={{rows: 50, placeholder: "Please enter Markdown text"}}
                         onChange={(value, viewUpdate) => {
-                            setNote(value);
+                            note.note_text = value;
+                            setNote(note);
                         }}
                     />
                 </div>
