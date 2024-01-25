@@ -15,7 +15,7 @@ cd notes
 npm install
 
 #run
-npm tauri run dev
+npm run tauri dev
 ```
 
 ## Demo

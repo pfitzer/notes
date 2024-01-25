@@ -15,7 +15,7 @@ function App() {
              className="p-1 flex flex-row justify-between items-center bg-green-700">
             <div className="bg-green-200 cursor-pointer w-full h-full min-h-6" onClick={async () => {
                 await handleOpenWindow(item.note_id)
-            }}>{item.note_text.split('\n')[0]}</div>
+            }}>{item.title}</div>
             <button className="btn btn-sm btn-square btn-ghost" onClick={() => {
                 handleRemoveNote(item.note_id)
             }}>
@@ -85,7 +85,7 @@ function App() {
 
     async function addNote() {
         const newId = crypto.randomUUID();
-        await addNoteDB(db, newId, "");
+        await addNoteDB(db, newId, {title: 'NEW NOTE', note_text: ''});
         await loadNotes(db);
     }
 
