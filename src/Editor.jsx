@@ -20,7 +20,7 @@ export async function loader({params}) {
 
 function Editor() {
     const {noteUUID} = useLoaderData();
-    const [note, setNote] = useState({})
+    const [note, setNote] = useState({title: '', note_text: ''})
     const [isRendered, setRender] = useState(false)
     const [markdownHtml, setMarkdownHtml] = useState("")
     const [db, setDB] = useState("")
@@ -56,12 +56,6 @@ function Editor() {
         }
     }, [menuEventPayload]);
 
-    function updateTitle(e) {
-        note.title = e.target.value;
-        // setNote(note);
-        console.log(note);
-    }
-
     async function saveToFile() {
         try {
             let filePath = await save({
@@ -83,7 +77,7 @@ function Editor() {
 
     async function renderMarkdown() {
         if (!isRendered) {
-            const response = await invoke("convert_markdown", {text: note});
+            const response = await invoke("convert_markdown", {text: note.note_text});
             setMarkdownHtml({__html: response});
         }
         setRender(!isRendered)
@@ -123,10 +117,22 @@ function Editor() {
                 <div className="prose" dangerouslySetInnerHTML={markdownHtml}></div>
                 :
                 <div className="w-full h-full">
-                    <label className="mb-2" htmlFor="title">Title</label>
-                    <input className="p-2 mb-2" name="title" id="title" value={note.title ? note.title : ''} onChange={(e) => {
-                        updateTitle(e);
-                    }} />
+                    <div className="md:flex md:items-center mb-6">
+                        <div className="md:w-1/6">
+                            <label className="block text-gray-500 font-bold mb-1 md:mb-0 pr-2"
+                                   htmlFor="title">Title</label>
+                        </div>
+                        <div className="md:w-5/6">
+                            <input
+                                className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-gray-800"
+                                name="title" id="title" value={note.title} onChange={(e) => {
+                                setNote({
+                                    title: e.target.value,
+                                    note_text: note.text
+                                });
+                            }}/>
+                        </div>
+                    </div>
                     <MDEditor
                         value={note.note_text}
                         height={450}
@@ -135,7 +141,10 @@ function Editor() {
                         textareaProps={{rows: 50, placeholder: "Please enter Markdown text"}}
                         onChange={(value, viewUpdate) => {
                             note.note_text = value;
-                            setNote(note);
+                            setNote({
+                                title: note.title,
+                                note_text: value
+                            });
                         }}
                     />
                 </div>

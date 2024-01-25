@@ -10,7 +10,7 @@ fn main() {
         // Define your migrations here
         Migration {
             version: 1,
-            description: "create_initial_tables",
+            description: "add new column title",
             sql: "ALTER TABLE notes ADD COLUMN title TEXT;",
             kind: MigrationKind::Up,
         }
