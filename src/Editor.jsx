@@ -19,7 +19,7 @@ export async function loader({params}) {
 
 function Editor() {
     const {noteUUID} = useLoaderData();
-    const [note, setNote] = useState({title: '', note_text: ''})
+    const [note, setNote] = useState({})
     const [isRendered, setRender] = useState(false)
     const [markdownHtml, setMarkdownHtml] = useState("")
     const [db, setDB] = useState("")
@@ -126,8 +126,8 @@ function Editor() {
                     }}>Copy
                     </button>
                     <button className="btn btn-sm join-item" onClick={async () => {
-                        await updateNoteDB(db, noteUUID, note);
                         setIsSaved(true);
+                        await updateNoteDB(db, noteUUID, note);
                     }}>Save
                     </button>
                 </div>
@@ -145,10 +145,7 @@ function Editor() {
                             <input
                                 className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-gray-800"
                                 name="title" id="title" value={note.title} onChange={(e) => {
-                                setNote({
-                                    title: e.target.value,
-                                    note_text: note.text
-                                });
+                                setNote({...note, title: e.target.value});
                                 setIsSaved(false);
                             }}/>
                         </div>
@@ -161,10 +158,7 @@ function Editor() {
                         textareaProps={{rows: 50, placeholder: "Please enter Markdown text"}}
                         onChange={(value, viewUpdate) => {
                             note.note_text = value;
-                            setNote({
-                                title: note.title,
-                                note_text: value
-                            });
+                            setNote({...note, note_text: value});
                             setIsSaved(false);
                         }}
                     />
