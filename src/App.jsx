@@ -12,15 +12,15 @@ function App() {
     let headline;
     const noteItems = notes.map((item) =>
         <div key={item.note_id}
-             className="p-1 flex flex-row justify-between items-center bg-green-700">
-            <div className="bg-green-200 cursor-pointer w-full h-full min-h-6" onClick={async () => {
+             className="p-1 flex flex-row justify-between items-center bg-primary rounded-md text-white mb-1">
+            <div className="cursor-pointer w-full h-full min-h-6" onClick={async () => {
                 await handleOpenWindow(item.note_id)
-            }}>{item.note_text.split('\n')[0]}</div>
+            }}>{item.title}</div>
             <button className="btn btn-sm btn-square btn-ghost" onClick={() => {
                 handleRemoveNote(item.note_id)
             }}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                     stroke="#f20707" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                     stroke="#6b7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                      className="lucide lucide-trash-2">
                     <path d="M3 6h18"/>
                     <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
@@ -85,7 +85,7 @@ function App() {
 
     async function addNote() {
         const newId = crypto.randomUUID();
-        await addNoteDB(db, newId, "");
+        await addNoteDB(db, newId, {title: 'NEW NOTE', note_text: ''});
         await loadNotes(db);
     }
 
@@ -112,9 +112,9 @@ function App() {
                     </svg>
                 </button>
             </div>
-            <input className="my-2 w-full input input-sm" onChange={(e) => {
-                handleSearch(e)
-            }}></input>
+                <input placeholder="search" className="my-2 w-full input input-sm" onChange={(e) => {
+                    handleSearch(e)
+                }}></input>
             {noteItems}
         </div>
     );

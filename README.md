@@ -5,6 +5,8 @@
 Simple desktop notes app for learning [Tauri](https://tauri.app/) and [React](https://react.dev/)
 
 #### development
+
+Make sure you have the latest version of [Rust](https://www.rust-lang.org/learn/get-started) installed.
 ```bash
 git clone https://github.com/pfitzer/notes.git
 cd notes
@@ -13,7 +15,7 @@ cd notes
 npm install
 
 #run
-npm tauri run dev
+npm run tauri dev
 ```
 
 ## Demo

@@ -7,7 +7,7 @@
   },
   "package": {
     "productName": "notes",
-    "version": "0.2.0"
+    "version": "0.3.0"
   },
   "tauri": {
     "allowlist": {
@@ -23,13 +23,17 @@
         "all": true
       },
       "dialog": {
-        "save": true
+        "save": true,
+        "confirm" : true
       },
       "fs":{
         "writeFile": true
       },
       "path": {
         "all": true
+      },
+      "window": {
+        "close":true
       }
     },
     "bundle": {
