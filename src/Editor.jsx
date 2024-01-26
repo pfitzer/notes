@@ -80,7 +80,7 @@ function Editor() {
                 filters: [{name: "Markdown", extensions: ["md"]}]
             });
 
-            await writeTextFile({contents: note, path: filePath});
+            await writeTextFile({contents: note.note_text, path: filePath});
         } catch (e) {
             console.log(e);
         }
@@ -106,14 +106,14 @@ function Editor() {
             <div className="flex justify-between items-center pb-2">
                 <h1>Editor</h1>
                 <div className="join">
-                    <label className="btn btn-sm join join-item swap">
+                    <label className="btn btn-sm btn-primary join join-item swap">
                         <input className="join" onChange={async () => {
                             await renderMarkdown();
                         }} type="checkbox"></input>
                         <div className="swap-on">HTML</div>
                         <div className="swap-off">MD</div>
                     </label>
-                    <button className="btn btn-sm join-item" onClick={async () => {
+                    <button className="btn btn-sm btn-primary join-item" onClick={async () => {
                         await writeText(note.note_text);
                         let permissionGranted = await isPermissionGranted()
                         if (!permissionGranted) {
@@ -125,10 +125,14 @@ function Editor() {
                         }
                     }}>Copy
                     </button>
-                    <button className="btn btn-sm join-item" onClick={async () => {
+                    <button className="btn btn-sm btn-primary join-item" onClick={async () => {
                         setIsSaved(true);
                         await updateNoteDB(db, noteUUID, note);
                     }}>Save
+                    </button>
+                    <button className="btn btn-sm btn-primary join-item" onClick={async () => {
+                        await saveToFile();
+                    }}>Export
                     </button>
                 </div>
             </div>

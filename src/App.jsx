@@ -12,7 +12,7 @@ function App() {
     let headline;
     const noteItems = notes.map((item) =>
         <div key={item.note_id}
-             className="p-1 flex flex-row justify-between items-center bg-blue-700 rounded-md text-white mb-1">
+             className="p-1 flex flex-row justify-between items-center bg-primary rounded-md text-white mb-1">
             <div className="cursor-pointer w-full h-full min-h-6" onClick={async () => {
                 await handleOpenWindow(item.note_id)
             }}>{item.title}</div>
