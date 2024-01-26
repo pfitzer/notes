@@ -23,13 +23,17 @@
         "all": true
       },
       "dialog": {
-        "save": true
+        "save": true,
+        "confirm" : true
       },
       "fs":{
         "writeFile": true
       },
       "path": {
         "all": true
+      },
+      "window": {
+        "close":true
       }
     },
     "bundle": {

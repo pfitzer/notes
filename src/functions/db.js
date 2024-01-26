@@ -15,5 +15,5 @@ export async function removeNoteDB(db, uuid, text) {
 }
 
 export async function getSearch(db, input) {
-    return await db.select("SELECT * FROM notes WHERE note_text LIKE '%" + input + "%'");
+    return await db.select("SELECT * FROM notes WHERE note_text LIKE '%" + input + "%' OR title LIKE '%" + input + "%' ");
 }

@@ -1,17 +1,16 @@
 import {useEffect, useState} from "react";
 import {invoke} from "@tauri-apps/api";
 import {writeText} from "@tauri-apps/api/clipboard";
-import {
-    isPermissionGranted, requestPermission, sendNotification
-} from "@tauri-apps/api/notification";
+import {isPermissionGranted, requestPermission, sendNotification} from "@tauri-apps/api/notification";
 import {useLoaderData} from "react-router-dom";
 import Database from "tauri-plugin-sql-api";
 import {updateNoteDB} from "./functions/db.js";
 import {listen} from "@tauri-apps/api/event";
-import {save} from "@tauri-apps/api/dialog";
+import {confirm, save} from "@tauri-apps/api/dialog";
 import {writeTextFile} from "@tauri-apps/api/fs";
 import {DBNAME} from "./functions/constants.js";
 import MDEditor from '@uiw/react-md-editor';
+import {appWindow} from "@tauri-apps/api/window";
 
 export async function loader({params}) {
     const noteID = params.noteID;
@@ -20,11 +19,30 @@ export async function loader({params}) {
 
 function Editor() {
     const {noteUUID} = useLoaderData();
-    const [note, setNote] = useState({title: '', note_text: ''})
+    const [note, setNote] = useState({})
     const [isRendered, setRender] = useState(false)
     const [markdownHtml, setMarkdownHtml] = useState("")
     const [db, setDB] = useState("")
     const [menuEventPayload, setEventPayload] = useState("");
+    const [isSaved, setIsSaved] = useState(true);
+
+    useEffect(() => {
+        if (!isSaved) {
+            const unlisten = async () => {
+                await appWindow.onCloseRequested(async (event) => {
+                    const response = await confirm(
+                        "The current note is unsaved, do you really wan`t to close the editor?",
+                        {title: 'warning', type: 'warning'}
+                    )
+
+                    if (!response) {
+                        event.preventDefault();
+                    }
+                })
+            }
+            unlisten();
+        }
+    }, [isSaved]);
 
     useEffect(() => {
         loadNoteFromDB();
@@ -108,6 +126,7 @@ function Editor() {
                     }}>Copy
                     </button>
                     <button className="btn btn-sm join-item" onClick={async () => {
+                        setIsSaved(true);
                         await updateNoteDB(db, noteUUID, note);
                     }}>Save
                     </button>
@@ -126,10 +145,8 @@ function Editor() {
                             <input
                                 className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-gray-800"
                                 name="title" id="title" value={note.title} onChange={(e) => {
-                                setNote({
-                                    title: e.target.value,
-                                    note_text: note.text
-                                });
+                                setNote({...note, title: e.target.value});
+                                setIsSaved(false);
                             }}/>
                         </div>
                     </div>
@@ -141,10 +158,8 @@ function Editor() {
                         textareaProps={{rows: 50, placeholder: "Please enter Markdown text"}}
                         onChange={(value, viewUpdate) => {
                             note.note_text = value;
-                            setNote({
-                                title: note.title,
-                                note_text: value
-                            });
+                            setNote({...note, note_text: value});
+                            setIsSaved(false);
                         }}
                     />
                 </div>
