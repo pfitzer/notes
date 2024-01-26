@@ -1,17 +1,16 @@
 import {useEffect, useState} from "react";
 import {invoke} from "@tauri-apps/api";
 import {writeText} from "@tauri-apps/api/clipboard";
-import {
-    isPermissionGranted, requestPermission, sendNotification
-} from "@tauri-apps/api/notification";
+import {isPermissionGranted, requestPermission, sendNotification} from "@tauri-apps/api/notification";
 import {useLoaderData} from "react-router-dom";
 import Database from "tauri-plugin-sql-api";
 import {updateNoteDB} from "./functions/db.js";
 import {listen} from "@tauri-apps/api/event";
-import {save} from "@tauri-apps/api/dialog";
+import {confirm, save} from "@tauri-apps/api/dialog";
 import {writeTextFile} from "@tauri-apps/api/fs";
 import {DBNAME} from "./functions/constants.js";
 import MDEditor from '@uiw/react-md-editor';
+import {appWindow} from "@tauri-apps/api/window";
 
 export async function loader({params}) {
     const noteID = params.noteID;
@@ -25,6 +24,25 @@ function Editor() {
     const [markdownHtml, setMarkdownHtml] = useState("")
     const [db, setDB] = useState("")
     const [menuEventPayload, setEventPayload] = useState("");
+    const [isSaved, setIsSaved] = useState(true);
+
+    useEffect(() => {
+        if (!isSaved) {
+            const unlisten = async () => {
+                await appWindow.onCloseRequested(async (event) => {
+                    const response = await confirm(
+                        "The current note is unsaved, do you really wan`t to close the editor?",
+                        {title: 'warning', type: 'warning'}
+                    )
+
+                    if (!response) {
+                        event.preventDefault();
+                    }
+                })
+            }
+            unlisten();
+        }
+    }, [isSaved]);
 
     useEffect(() => {
         loadNoteFromDB();
@@ -109,6 +127,7 @@ function Editor() {
                     </button>
                     <button className="btn btn-sm join-item" onClick={async () => {
                         await updateNoteDB(db, noteUUID, note);
+                        setIsSaved(true);
                     }}>Save
                     </button>
                 </div>
@@ -130,6 +149,7 @@ function Editor() {
                                     title: e.target.value,
                                     note_text: note.text
                                 });
+                                setIsSaved(false);
                             }}/>
                         </div>
                     </div>
@@ -145,6 +165,7 @@ function Editor() {
                                 title: note.title,
                                 note_text: value
                             });
+                            setIsSaved(false);
                         }}
                     />
                 </div>
