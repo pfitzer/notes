@@ -42,7 +42,7 @@ function Editor() {
             }
             unlisten();
         }
-    }, [isSaved]);
+    }, []);
 
     useEffect(() => {
         loadNoteFromDB();
@@ -126,8 +126,10 @@ function Editor() {
                     }}>Copy
                     </button>
                     <button className="btn btn-sm btn-primary join-item" onClick={async () => {
-                        setIsSaved(true);
-                        await updateNoteDB(db, noteUUID, note);
+                        await updateNoteDB(db, noteUUID, note).then(() => {
+                            setIsSaved(true);
+                        });
+
                     }}>Save
                     </button>
                     <button className="btn btn-sm btn-primary join-item" onClick={async () => {
