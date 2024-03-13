@@ -1,5 +1,4 @@
 import {useEffect, useState} from "react";
-import {invoke} from "@tauri-apps/api";
 import {writeText} from "@tauri-apps/api/clipboard";
 import {isPermissionGranted, requestPermission, sendNotification} from "@tauri-apps/api/notification";
 import {useLoaderData} from "react-router-dom";
@@ -93,26 +92,11 @@ function Editor() {
         setDB(loadedDB);
     }
 
-    async function renderMarkdown() {
-        if (!isRendered) {
-            const response = await invoke("convert_markdown", {text: note.note_text});
-            setMarkdownHtml({__html: response});
-        }
-        setRender(!isRendered)
-    }
-
     return (
         <div className="m-2">
             <div className="flex justify-between items-center pb-2">
                 <h1>Editor</h1>
                 <div className="join">
-                    <label className="btn btn-sm btn-primary join join-item swap">
-                        <input className="join" onChange={async () => {
-                            await renderMarkdown();
-                        }} type="checkbox"></input>
-                        <div className="swap-on">HTML</div>
-                        <div className="swap-off">MD</div>
-                    </label>
                     <button className="btn btn-sm btn-primary join-item" onClick={async () => {
                         await writeText(note.note_text);
                         let permissionGranted = await isPermissionGranted()
