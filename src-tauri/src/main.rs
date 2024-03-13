@@ -36,18 +36,12 @@ fn main() {
                 _ => {}
             }
         })
-        .invoke_handler(tauri::generate_handler![convert_markdown, open_editor])
+        .invoke_handler(tauri::generate_handler![open_editor])
         .plugin(tauri_plugin_sql::Builder::default()
             .add_migrations("sqlite:notes.sqlite", migrations)
             .build())
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
-}
-
-#[tauri::command]
-fn convert_markdown(text: &str) -> String {
-    let html: String = markdown::to_html(text);
-    html
 }
 
 #[tauri::command]
