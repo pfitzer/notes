@@ -1,15 +1,16 @@
 import {useEffect, useState} from "react";
-import {writeText} from "@tauri-apps/api/clipboard";
-import {isPermissionGranted, requestPermission, sendNotification} from "@tauri-apps/api/notification";
+import {writeText} from "@tauri-apps/plugin-clipboard-manager";
+import {isPermissionGranted, requestPermission, sendNotification} from "@tauri-apps/plugin-notification";
 import {useLoaderData} from "react-router-dom";
-import Database from "tauri-plugin-sql-api";
+import Database from "@tauri-apps/plugin-sql";
 import {updateNoteDB} from "./functions/db.js";
 import {listen} from "@tauri-apps/api/event";
-import {confirm, save} from "@tauri-apps/api/dialog";
-import {writeTextFile} from "@tauri-apps/api/fs";
+import {confirm, save} from "@tauri-apps/plugin-dialog";
+import {writeTextFile} from "@tauri-apps/plugin-fs";
 import {DBNAME} from "./functions/constants.js";
 import MDEditor from '@uiw/react-md-editor';
-import {appWindow} from "@tauri-apps/api/window";
+import {getCurrentWebviewWindow} from "@tauri-apps/api/webviewWindow";
+const appWindow = getCurrentWebviewWindow()
 
 export async function loader({params}) {
     const noteID = params.noteID;

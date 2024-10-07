@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import Database from "tauri-plugin-sql-api";
+import Database from "@tauri-apps/plugin-sql";
 import {addNoteDB, getSearch, removeNoteDB} from "./functions/db.js";
 import {invoke} from "@tauri-apps/api";
 import {listen} from "@tauri-apps/api/event";

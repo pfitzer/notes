@@ -3,10 +3,10 @@
 
 use tauri::api::dialog::message;
 use tauri::{CustomMenuItem, Manager, Menu, Submenu, Window};
-use tauri::menu::MenuBuilder;
 use tauri_plugin_sql::{Migration, MigrationKind};
 
 fn main() {
+    app.lib.run;
     let quit = CustomMenuItem::new("quit".to_string(), "Quit");
     let about = CustomMenuItem::new("about".to_string(), "About");
     let submenu = Submenu::new("File", Menu::new().add_item(about).add_item(quit));
@@ -22,44 +22,25 @@ fn main() {
         },
     ];
 
-    let _ = tauri::Builder::default()
-        .plugin(tauri_plugin_clipboard_manager::init())
-        .plugin(tauri_plugin_notification::init())
-        .plugin(tauri_plugin_sql::Builder::new().build())
-        .plugin(tauri_plugin_shell::init())
-        .plugin(tauri_plugin_fs::init())
-        .plugin(tauri_plugin_dialog::init())
+    tauri::Builder::default()
         .menu(menu)
-        .setup(|app| {
-            // .on_menu_event(|event| match event.menu_item_id() {
-            //     "quit" => {
-            //         std::process::exit(0);
-            //     }
-            //     "about" => {
-            //         call_about(event.window().clone());
-            //     }
-            //     _ => {}
-            // })
-            let menu = MenuBuilder::new(app)
-                .copy()
-                .paste()
-                .separator()
-                .undo()
-                .redo()
-                .text("open-url", "Open URL")
-                .check("toggle", "Toggle")
-                .icon("show-app", "Show App", app.default_window_icon().cloned().unwrap())
-                .build()?;
-            Ok(())
-        }
-            .invoke_handler(tauri::generate_handler![open_editor])
-            .plugin(
-                tauri_plugin_sql::Builder::default()
-                    .add_migrations("sqlite:notes.sqlite", migrations)
-                    .build(),
-            )
-            .run(tauri::generate_context!())
-            .expect("error while running tauri application");
+        .on_menu_event(|event| match event.menu_item_id() {
+            "quit" => {
+                std::process::exit(0);
+            }
+            "about" => {
+                call_about(event.window().clone());
+            }
+            _ => {}
+        })
+        .invoke_handler(tauri::generate_handler![open_editor])
+        .plugin(
+            tauri_plugin_sql::Builder::default()
+                .add_migrations("sqlite:notes.sqlite", migrations)
+                .build(),
+        )
+        .run(tauri::generate_context!())
+        .expect("error while running tauri application");
 }
 
 #[tauri::command]

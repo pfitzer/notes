@@ -1,0 +1,24 @@
+{
+  "identifier": "migrated",
+  "description": "permissions that were migrated from v1",
+  "local": true,
+  "windows": [
+    "main"
+  ],
+  "permissions": [
+    "core:default",
+    "fs:allow-write-file",
+    "core:window:allow-close",
+    "shell:allow-open",
+    "dialog:allow-save",
+    "dialog:allow-confirm",
+    "notification:default",
+    "clipboard-manager:allow-write-text",
+    "dialog:default",
+    "fs:default",
+    "shell:default",
+    "sql:default",
+    "notification:default",
+    "clipboard-manager:default"
+  ]
+}
