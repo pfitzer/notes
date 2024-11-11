@@ -10,7 +10,7 @@
     "tauri": "tauri"
   },
   "dependencies": {
-    "@tauri-apps/api": "^1.6.0",
+    "@tauri-apps/api": "^2.1.0",
     "@uiw/react-md-editor": "^4.0.4",
     "react": "^18.2.0",
     "react-dom": "^18.3.1",
