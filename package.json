@@ -18,7 +18,7 @@
     "tauri-plugin-sql-api": "github:tauri-apps/tauri-plugin-sql#v1"
   },
   "devDependencies": {
-    "@tailwindcss/typography": "^0.5.15",
+    "@tailwindcss/typography": "^0.5.16",
     "@tauri-apps/cli": "^2.8.4",
     "@vitejs/plugin-react": "^5.0.2",
     "autoprefixer": "^10.4.21",
