@@ -1,7 +1,7 @@
 {
   "name": "notes",
   "private": true,
-  "version": "0.5.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -10,21 +10,27 @@
     "tauri": "tauri"
   },
   "dependencies": {
-    "@tauri-apps/api": "^1.6.0",
-    "@uiw/react-md-editor": "^4.0.4",
-    "react": "^18.2.0",
-    "react-dom": "^19.1.1",
-    "react-router-dom": "^7.8.2",
-    "tauri-plugin-sql-api": "github:tauri-apps/tauri-plugin-sql#v1"
+    "@tailwindcss/postcss": "^4.1.14",
+    "@tauri-apps/api": "^2.8.0",
+    "@tauri-apps/plugin-clipboard-manager": "^2",
+    "@tauri-apps/plugin-dialog": "^2",
+    "@tauri-apps/plugin-fs": "^2",
+    "@tauri-apps/plugin-notification": "^2",
+    "@tauri-apps/plugin-shell": "^2",
+    "@tauri-apps/plugin-sql": "^2",
+    "@uiw/react-md-editor": "^4.0.8",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-router-dom": "^7.9.3"
   },
   "devDependencies": {
-    "@tailwindcss/typography": "^0.5.15",
-    "@tauri-apps/cli": "^2.2.7",
-    "@vitejs/plugin-react": "^5.0.2",
+    "@tailwindcss/typography": "^0.5.19",
+    "@tauri-apps/cli": "^2.8.4",
+    "@vitejs/plugin-react": "^5.0.4",
     "autoprefixer": "^10.4.21",
-    "daisyui": "^4.12.14",
+    "daisyui": "^5.1.27",
     "postcss": "^8.5.3",
-    "tailwindcss": "^3.4.14",
-    "vite": "^6.1.6"
+    "tailwindcss": "^4.1.14",
+    "vite": "^7.1.9"
   }
 }

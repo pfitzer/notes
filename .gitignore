@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Windows nul file (created by some tools in Git Bash/MSYS2)
+nul
