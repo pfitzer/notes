@@ -1,15 +1,15 @@
 import {useEffect, useState} from "react";
-import {writeText} from "@tauri-apps/api/clipboard";
-import {isPermissionGranted, requestPermission, sendNotification} from "@tauri-apps/api/notification";
+import {writeText} from "@tauri-apps/plugin-clipboard-manager";
+import {isPermissionGranted, requestPermission, sendNotification} from "@tauri-apps/plugin-notification";
 import {useLoaderData} from "react-router-dom";
-import Database from "tauri-plugin-sql-api";
+import Database from "@tauri-apps/plugin-sql";
 import {updateNoteDB} from "./functions/db.js";
 import {listen} from "@tauri-apps/api/event";
-import {confirm, save} from "@tauri-apps/api/dialog";
-import {writeTextFile} from "@tauri-apps/api/fs";
+import {ask, save} from "@tauri-apps/plugin-dialog";
+import {writeTextFile} from "@tauri-apps/plugin-fs";
 import {DBNAME} from "./functions/constants.js";
 import MDEditor from '@uiw/react-md-editor';
-import {appWindow} from "@tauri-apps/api/window";
+import {getCurrentWindow} from "@tauri-apps/api/window";
 
 export async function loader({params}) {
     const noteID = params.noteID;
@@ -28,10 +28,11 @@ function Editor() {
     useEffect(() => {
         if (!isSaved) {
             const unlisten = async () => {
+                const appWindow = getCurrentWindow();
                 await appWindow.onCloseRequested(async (event) => {
-                    const response = await confirm(
+                    const response = await ask(
                         "The current note is unsaved, do you really wan`t to close the editor?",
-                        {title: 'warning', type: 'warning'}
+                        {title: 'warning', kind: 'warning'}
                     )
 
                     if (!response) {
@@ -79,7 +80,9 @@ function Editor() {
                 filters: [{name: "Markdown", extensions: ["md"]}]
             });
 
-            await writeTextFile({contents: note.note_text, path: filePath});
+            if (filePath) {
+                await writeTextFile(filePath, note.note_text);
+            }
         } catch (e) {
             console.log(e);
         }

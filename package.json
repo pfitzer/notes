@@ -10,12 +10,18 @@
     "tauri": "tauri"
   },
   "dependencies": {
+    "@tailwindcss/postcss": "^4.1.14",
     "@tauri-apps/api": "^2.8.0",
+    "@tauri-apps/plugin-clipboard-manager": "^2",
+    "@tauri-apps/plugin-dialog": "^2",
+    "@tauri-apps/plugin-fs": "^2",
+    "@tauri-apps/plugin-notification": "^2",
+    "@tauri-apps/plugin-shell": "^2",
+    "@tauri-apps/plugin-sql": "^2",
     "@uiw/react-md-editor": "^4.0.8",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "react-router-dom": "^7.9.3",
-    "tauri-plugin-sql-api": "github:tauri-apps/tauri-plugin-sql#v1"
+    "react-router-dom": "^7.9.3"
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.19",

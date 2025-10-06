@@ -1,14 +1,15 @@
 import {useEffect, useState} from "react";
-import Database from "tauri-plugin-sql-api";
+import Database from "@tauri-apps/plugin-sql";
 import {addNoteDB, getSearch, removeNoteDB} from "./functions/db.js";
-import {invoke} from "@tauri-apps/api";
+import {invoke} from "@tauri-apps/api/core";
 import {listen} from "@tauri-apps/api/event";
 import {DBNAME} from "./functions/constants.js";
 
 function App() {
 
     const [notes, setNotes] = useState([]);
-    const [db, setDB] = useState("")
+    const [db, setDB] = useState(null)
+    const [isDbReady, setIsDbReady] = useState(false);
     let headline;
     const noteItems = notes.map((item) =>
         <div key={item.note_id}
@@ -20,7 +21,7 @@ function App() {
                 handleRemoveNote(item.note_id)
             }}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                     stroke="#6b7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                     stroke="#6b7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
                      className="lucide lucide-trash-2">
                     <path d="M3 6h18"/>
                     <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
@@ -38,7 +39,7 @@ function App() {
     }, []);
 
     useEffect(() => {
-        if (db === '') {
+        if (!db) {
             return;
         }
         const unlistenPromises = [];
@@ -46,8 +47,8 @@ function App() {
         unlistenPromises.push(listen("db", (e) => {
             loadNotes(db);
         }));
-        unlistenPromises.push(listen("tauri://close-requested", (e) => {
-            setListOfOpenWindows(listOfOpenWindows.filter((items) => items !== e.windowLabel));
+        unlistenPromises.push(listen("window-closed", (e) => {
+            setListOfOpenWindows(listOfOpenWindows.filter((items) => items !== e.payload));
         }));
 
         return () => {
@@ -57,15 +58,20 @@ function App() {
         }
     }, [db, listOfOpenWindows]);
 
-    async function createDB(db) {
-        const loadedDB = await Database.load('sqlite:' + DBNAME);
-        const _first_load = await loadedDB.execute(
-            "CREATE TABLE IF NOT EXISTS notes (note_id CHAR NOT NULL PRIMARY KEY, note_text TEXT DEAFULT NULL);"
-        );
+    async function createDB() {
+        try {
+            const loadedDB = await Database.load('sqlite:' + DBNAME);
+            const _first_load = await loadedDB.execute(
+                "CREATE TABLE IF NOT EXISTS notes (note_id CHAR NOT NULL PRIMARY KEY, title TEXT, note_text TEXT DEFAULT NULL);"
+            );
 
-        // const result2 = await loadedDB.execute("INSERT INTO notes (note_id, note_text) VALUES ($1, $2)", [crypto.randomUUID(), "DEMO"])
-        setDB(loadedDB);
-        loadNotes(loadedDB);
+            // const result2 = await loadedDB.execute("INSERT INTO notes (note_id, note_text) VALUES ($1, $2)", [crypto.randomUUID(), "DEMO"])
+            setDB(loadedDB);
+            setIsDbReady(true);
+            await loadNotes(loadedDB);
+        } catch (error) {
+            console.error('Failed to initialize database:', error);
+        }
     }
 
     async function loadNotes(db) {
@@ -84,6 +90,10 @@ function App() {
     }
 
     async function addNote() {
+        if (!db) {
+            console.error('Database not initialized');
+            return;
+        }
         const newId = crypto.randomUUID();
         await addNoteDB(db, newId, {title: 'NEW NOTE', note_text: ''});
         await loadNotes(db);
@@ -105,7 +115,7 @@ function App() {
                     addNote()
                 }}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                         stroke="#f6f7f3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                         stroke="#f6f7f3" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
                          className="lucide lucide-plus">
                         <path d="M5 12h14"/>
                         <path d="M12 5v14"/>
