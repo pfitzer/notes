@@ -1,64 +1,39 @@
 {
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "notes",
+  "version": "1.0.0",
+  "identifier": "de.mp-development.notes",
   "build": {
     "beforeDevCommand": "npm run dev",
     "beforeBuildCommand": "npm run build",
-    "devPath": "http://localhost:4000",
-    "distDir": "../dist"
+    "devUrl": "http://localhost:4000",
+    "frontendDist": "../dist"
   },
-  "package": {
-    "productName": "notes",
-    "version": "0.3.2"
-  },
-  "tauri": {
-    "allowlist": {
-      "all": false,
-      "shell": {
-        "all": false,
-        "open": true
-      },
-      "clipboard": {
-        "writeText": true
-      },
-      "notification": {
-        "all": true
-      },
-      "dialog": {
-        "save": true,
-        "confirm" : true
-      },
-      "fs":{
-        "writeFile": true
-      },
-      "path": {
-        "all": true
-      },
-      "window": {
-        "close":true
-      }
-    },
-    "bundle": {
-      "active": true,
-      "targets": "all",
-      "identifier": "de.mp-development.notes",
-      "icon": [
-        "icons/32x32.png",
-        "icons/128x128.png",
-        "icons/128x128@2x.png",
-        "icons/icon.icns",
-        "icons/icon.ico"
-      ]
-    },
-    "security": {
-      "csp": null
-    },
+  "app": {
     "windows": [
       {
         "fullscreen": false,
         "resizable": true,
         "title": "Notes",
         "width": 300,
-        "height": 400
+        "height": 400,
+        "label": "main"
       }
+    ],
+    "security": {
+      "csp": null,
+      "capabilities": ["default"]
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
     ]
   }
 }
