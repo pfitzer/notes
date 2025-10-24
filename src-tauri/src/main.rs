@@ -14,6 +14,28 @@ fn main() {
             description: "add new column title",
             sql: "ALTER TABLE notes ADD COLUMN title TEXT;",
             kind: MigrationKind::Up,
+        },
+        Migration {
+            version: 2,
+            description: "create tags table",
+            sql: "CREATE TABLE IF NOT EXISTS tags (
+                tag_id TEXT PRIMARY KEY,
+                name TEXT NOT NULL UNIQUE,
+                color TEXT NOT NULL DEFAULT '#3b82f6'
+            );",
+            kind: MigrationKind::Up,
+        },
+        Migration {
+            version: 3,
+            description: "create note_tags junction table",
+            sql: "CREATE TABLE IF NOT EXISTS note_tags (
+                note_id TEXT NOT NULL,
+                tag_id TEXT NOT NULL,
+                PRIMARY KEY (note_id, tag_id),
+                FOREIGN KEY (note_id) REFERENCES notes(note_id) ON DELETE CASCADE,
+                FOREIGN KEY (tag_id) REFERENCES tags(tag_id) ON DELETE CASCADE
+            );",
+            kind: MigrationKind::Up,
         }
     ];
 
@@ -28,14 +50,20 @@ fn main() {
             .build())
         .setup(|app| {
             let quit = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?;
+            let help = MenuItem::with_id(app, "help", "Help", true, None::<&str>)?;
             let about = MenuItem::with_id(app, "about", "About", true, None::<&str>)?;
-            let menu = Menu::with_items(app, &[&about, &quit])?;
+            let menu = Menu::with_items(app, &[&help, &about, &quit])?;
 
             app.set_menu(menu)?;
             app.on_menu_event(move |app, event| {
                 match event.id().as_ref() {
                     "quit" => {
                         std::process::exit(0);
+                    }
+                    "help" => {
+                        if let Some(window) = app.get_webview_window("main") {
+                            call_help(window);
+                        }
                     }
                     "about" => {
                         if let Some(window) = app.get_webview_window("main") {
@@ -77,9 +105,57 @@ async fn open_editor(app: tauri::AppHandle, editor_id: &str) -> Result<(), tauri
 
 fn call_about(window: tauri::WebviewWindow) {
     tauri::async_runtime::spawn(async move {
+        let version = env!("CARGO_PKG_VERSION");
+        let message = format!("Version {}\n\nMIT License\n\nCopyright (c) 2024 Michael Pfister", version);
         let _ = window.app_handle().dialog()
-            .message("MIT License\n\nCopyright (c) 2024 Michael Pfister")
+            .message(message)
             .title("About")
+            .parent(&window)
+            .blocking_show();
+    });
+}
+
+fn call_help(window: tauri::WebviewWindow) {
+    tauri::async_runtime::spawn(async move {
+        let help_text = "\
+📝 Notes Application - Usage Instructions
+
+BASIC FEATURES:
+• Create, edit, and manage notes with Markdown support
+• Organize notes with color-coded tags
+• Search and filter notes by text or tags
+• Export notes to files
+• Copy note content to clipboard
+• Multiple editor windows support
+
+TAGS:
+• Add tags in the editor by typing and pressing Enter
+• Click tags in the notes list to filter by tag
+• Tags are color-coded and shared across all notes
+• Remove tags by clicking the × button
+
+KEYBOARD SHORTCUTS:
+
+Notes List Page:
+  Ctrl/Cmd + N    Create a new note
+  Ctrl/Cmd + F    Focus on search input
+
+Editor Page:
+  Ctrl/Cmd + S    Save the current note
+
+TIPS:
+• Notes are automatically stored in a local SQLite database
+• Use Markdown formatting for rich text editing
+• The editor shows an asterisk (*) when there are unsaved changes
+• Closing an editor with unsaved changes will prompt for confirmation
+• Filter multiple tags to find notes with any of the selected tags
+
+For more information, visit:
+https://github.com/pfitzer/notes";
+
+        let _ = window.app_handle().dialog()
+            .message(help_text)
+            .title("Help")
             .parent(&window)
             .blocking_show();
     });

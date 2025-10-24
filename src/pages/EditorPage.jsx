@@ -1,16 +1,22 @@
 import { useEffect } from "react";
+import { useLoaderData } from "react-router-dom";
 import { writeText } from "@tauri-apps/plugin-clipboard-manager";
 import MDEditor from "@uiw/react-md-editor";
 import { EditorToolbar } from "../components/EditorToolbar.jsx";
+import { TagInput } from "../components/TagInput.jsx";
 import { useEditor } from "../hooks/useEditor.js";
 import { useNotifications } from "../hooks/useNotifications.js";
 import { useFileExport } from "../hooks/useFileExport.js";
+import { useKeyboardShortcut } from "../hooks/useKeyboardShortcut.js";
+import { useTags } from "../hooks/useTags.js";
 
 export function EditorPage() {
+  const { noteUUID } = useLoaderData();
   const { note, isSaved, loading, menuEvent, updateNoteContent, saveNote } =
     useEditor();
   const { notify } = useNotifications();
   const { exportToFile } = useFileExport();
+  const { noteTags, addTag, removeTag } = useTags(noteUUID);
 
   // Handle menu events
   useEffect(() => {
@@ -48,6 +54,9 @@ export function EditorPage() {
     updateNoteContent({ note_text: value });
   };
 
+  // Keyboard shortcut for saving (Ctrl+S / Cmd+S)
+  useKeyboardShortcut('s', handleSave, { ctrl: true });
+
   if (loading) {
     return (
       <div className="m-2 flex items-center justify-center h-screen">
@@ -81,6 +90,23 @@ export function EditorPage() {
               id="title"
               value={note.title || ""}
               onChange={handleTitleChange}
+            />
+          </div>
+        </div>
+        <div className="md:flex md:items-start mb-6">
+          <div className="md:w-1/6">
+            <label
+              className="block text-gray-500 font-bold mb-1 md:mb-0 pr-2"
+              htmlFor="tags"
+            >
+              Tags
+            </label>
+          </div>
+          <div className="md:w-5/6">
+            <TagInput
+              tags={noteTags}
+              onAddTag={addTag}
+              onRemoveTag={removeTag}
             />
           </div>
         </div>
