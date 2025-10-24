@@ -68,7 +68,7 @@ describe('NotesList', () => {
   it('uses note_id as key for each NoteItem', () => {
     const { container } = render(<NotesList {...defaultProps} />);
     // React should render all items without key warnings
-    expect(container.querySelectorAll('.p-1')).toHaveLength(3);
+    expect(container.querySelectorAll('.p-2')).toHaveLength(3);
   });
 
   it('handles single note correctly', () => {

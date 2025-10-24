@@ -14,6 +14,28 @@ fn main() {
             description: "add new column title",
             sql: "ALTER TABLE notes ADD COLUMN title TEXT;",
             kind: MigrationKind::Up,
+        },
+        Migration {
+            version: 2,
+            description: "create tags table",
+            sql: "CREATE TABLE IF NOT EXISTS tags (
+                tag_id TEXT PRIMARY KEY,
+                name TEXT NOT NULL UNIQUE,
+                color TEXT NOT NULL DEFAULT '#3b82f6'
+            );",
+            kind: MigrationKind::Up,
+        },
+        Migration {
+            version: 3,
+            description: "create note_tags junction table",
+            sql: "CREATE TABLE IF NOT EXISTS note_tags (
+                note_id TEXT NOT NULL,
+                tag_id TEXT NOT NULL,
+                PRIMARY KEY (note_id, tag_id),
+                FOREIGN KEY (note_id) REFERENCES notes(note_id) ON DELETE CASCADE,
+                FOREIGN KEY (tag_id) REFERENCES tags(tag_id) ON DELETE CASCADE
+            );",
+            kind: MigrationKind::Up,
         }
     ];
 
@@ -100,10 +122,17 @@ fn call_help(window: tauri::WebviewWindow) {
 
 BASIC FEATURES:
 • Create, edit, and manage notes with Markdown support
-• Search through your notes
+• Organize notes with color-coded tags
+• Search and filter notes by text or tags
 • Export notes to files
 • Copy note content to clipboard
 • Multiple editor windows support
+
+TAGS:
+• Add tags in the editor by typing and pressing Enter
+• Click tags in the notes list to filter by tag
+• Tags are color-coded and shared across all notes
+• Remove tags by clicking the × button
 
 KEYBOARD SHORTCUTS:
 
@@ -119,6 +148,7 @@ TIPS:
 • Use Markdown formatting for rich text editing
 • The editor shows an asterisk (*) when there are unsaved changes
 • Closing an editor with unsaved changes will prompt for confirmation
+• Filter multiple tags to find notes with any of the selected tags
 
 For more information, visit:
 https://github.com/pfitzer/notes";

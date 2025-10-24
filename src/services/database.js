@@ -79,3 +79,135 @@ export async function updateNote(db, uuid, note) {
 export async function deleteNote(db, uuid) {
   return await db.execute("DELETE FROM notes WHERE note_id = $1;", [uuid]);
 }
+
+// ============================================
+// TAG FUNCTIONS
+// ============================================
+
+/**
+ * Get all tags from database
+ */
+export async function getAllTags(db) {
+  return await db.select("SELECT * FROM tags ORDER BY name;");
+}
+
+/**
+ * Get tags for a specific note
+ */
+export async function getTagsForNote(db, noteId) {
+  return await db.select(
+    `SELECT t.* FROM tags t
+     INNER JOIN note_tags nt ON t.tag_id = nt.tag_id
+     WHERE nt.note_id = $1
+     ORDER BY t.name;`,
+    [noteId]
+  );
+}
+
+/**
+ * Create a new tag
+ */
+export async function createTag(db, tagId, name, color = '#3b82f6') {
+  return await db.execute(
+    "INSERT INTO tags (tag_id, name, color) VALUES ($1, $2, $3);",
+    [tagId, name, color]
+  );
+}
+
+/**
+ * Get or create a tag by name
+ */
+export async function getOrCreateTag(db, name, color = '#3b82f6') {
+  // Try to find existing tag
+  const existing = await db.select(
+    "SELECT * FROM tags WHERE name = $1;",
+    [name]
+  );
+
+  if (existing.length > 0) {
+    return existing[0];
+  }
+
+  // Create new tag
+  const tagId = crypto.randomUUID();
+  await createTag(db, tagId, name, color);
+  return { tag_id: tagId, name, color };
+}
+
+/**
+ * Add a tag to a note
+ */
+export async function addTagToNote(db, noteId, tagId) {
+  return await db.execute(
+    "INSERT OR IGNORE INTO note_tags (note_id, tag_id) VALUES ($1, $2);",
+    [noteId, tagId]
+  );
+}
+
+/**
+ * Remove a tag from a note
+ */
+export async function removeTagFromNote(db, noteId, tagId) {
+  return await db.execute(
+    "DELETE FROM note_tags WHERE note_id = $1 AND tag_id = $2;",
+    [noteId, tagId]
+  );
+}
+
+/**
+ * Delete a tag (and all its associations)
+ */
+export async function deleteTag(db, tagId) {
+  return await db.execute("DELETE FROM tags WHERE tag_id = $1;", [tagId]);
+}
+
+/**
+ * Get all notes with a specific tag
+ */
+export async function getNotesByTag(db, tagId) {
+  return await db.select(
+    `SELECT n.* FROM notes n
+     INNER JOIN note_tags nt ON n.note_id = nt.note_id
+     WHERE nt.tag_id = $1;`,
+    [tagId]
+  );
+}
+
+/**
+ * Get all notes with their tags
+ */
+export async function getNotesWithTags(db) {
+  const notes = await getAllNotes(db);
+
+  // Get tags for each note
+  for (const note of notes) {
+    note.tags = await getTagsForNote(db, note.note_id);
+  }
+
+  return notes;
+}
+
+/**
+ * Search notes by tag names
+ */
+export async function searchNotesByTags(db, tagNames) {
+  if (!tagNames || tagNames.length === 0) {
+    return await getNotesWithTags(db);
+  }
+
+  const placeholders = tagNames.map((_, i) => `$${i + 1}`).join(',');
+  const notes = await db.select(
+    `SELECT DISTINCT n.* FROM notes n
+     INNER JOIN note_tags nt ON n.note_id = nt.note_id
+     INNER JOIN tags t ON nt.tag_id = t.tag_id
+     WHERE t.name IN (${placeholders});`,
+    tagNames
+  );
+
+  // Get tags for each note
+  for (const note of notes) {
+    note.tags = await getTagsForNote(db, note.note_id);
+  }
+
+  return notes;
+}

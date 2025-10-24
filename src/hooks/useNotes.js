@@ -6,6 +6,8 @@ import {
   addNote,
   updateNote,
   deleteNote,
+  getNotesWithTags,
+  getTagsForNote,
 } from "../services/database.js";
 import { useDatabase } from "../contexts/DatabaseContext.jsx";
 
@@ -20,7 +22,7 @@ export function useNotes() {
 
     try {
       setLoading(true);
-      const result = await getAllNotes(db);
+      const result = await getNotesWithTags(db);
       setNotes(result);
       setError(null);
     } catch (err) {
@@ -38,6 +40,12 @@ export function useNotes() {
       try {
         setLoading(true);
         const result = await searchNotes(db, query);
+
+        // Load tags for each note
+        for (const note of result) {
+          note.tags = await getTagsForNote(db, note.note_id);
+        }
+
         setNotes(result);
         setError(null);
       } catch (err) {

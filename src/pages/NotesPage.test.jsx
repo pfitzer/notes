@@ -13,8 +13,13 @@ vi.mock('../hooks/useWindowManager', () => ({
   useWindowManager: vi.fn(),
 }));
 
+vi.mock('../hooks/useTags', () => ({
+  useTags: vi.fn(),
+}));
+
 import { useNotes } from '../hooks/useNotes';
 import { useWindowManager } from '../hooks/useWindowManager';
+import { useTags } from '../hooks/useTags';
 
 describe('NotesPage', () => {
   const mockCreateNote = vi.fn();
@@ -35,6 +40,17 @@ describe('NotesPage', () => {
 
     useWindowManager.mockReturnValue({
       openWindow: mockOpenWindow,
+    });
+
+    useTags.mockReturnValue({
+      allTags: [],
+      noteTags: [],
+      loading: false,
+      error: null,
+      addTag: vi.fn(),
+      removeTag: vi.fn(),
+      refreshTags: vi.fn(),
+      refreshAllTags: vi.fn(),
     });
   });
 

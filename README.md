@@ -8,6 +8,8 @@ A simple, lightweight desktop notes application built with [Tauri](https://tauri
 ## Features
 
 - 📝 Create and manage notes with Markdown support
+- 🏷️ Organize notes with color-coded tags
+- 🔍 Search and filter notes by text or tags
 - 💾 SQLite database for local storage
 - 🎨 Clean, modern UI built with DaisyUI
 - 📤 Export notes to files
@@ -40,6 +42,34 @@ npm run tauri dev
 # Build for production
 npm run tauri build
 ```
+
+## Using Tags
+
+The tag system helps you organize and filter your notes effectively.
+
+### Adding Tags to Notes
+
+In the **Editor Page**:
+1. Find the "Tags" field below the title
+2. Type a tag name and press **Enter** to add it
+3. Tags are automatically created with random colors
+4. Click the × button on a tag to remove it
+
+### Filtering Notes by Tags
+
+In the **Notes List Page**:
+- All available tags appear below the search bar
+- Click a tag to filter notes with that tag
+- Selected tags are highlighted with a white ring
+- Click "Clear all" to remove all tag filters
+- Filter multiple tags to show notes with any of the selected tags
+
+### Tag Features
+
+- **Color-Coded**: Each tag gets a unique color for easy identification
+- **Persistent**: Tags are shared across all notes
+- **Visual**: Tags appear directly on note cards in the list view
+- **Fast Filtering**: Instantly filter your notes by clicking tags
 
 ## Keyboard Shortcuts
 
@@ -78,9 +108,10 @@ npm run test:coverage
 
 Current test coverage: **100%** for all tested components
 
-- All UI components (Button, Input, Icons)
+- All UI components (Button, Input, Tag, Icons)
 - Feature components (NoteItem, NotesList)
 - Pages (NotesPage)
+- Keyboard shortcuts hook
 
 Coverage reports are generated in the `coverage/` directory. Open `coverage/index.html` in a browser to view the detailed coverage report.
 
