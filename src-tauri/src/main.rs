@@ -77,8 +77,10 @@ async fn open_editor(app: tauri::AppHandle, editor_id: &str) -> Result<(), tauri
 
 fn call_about(window: tauri::WebviewWindow) {
     tauri::async_runtime::spawn(async move {
+        let version = env!("CARGO_PKG_VERSION");
+        let message = format!("Version {}\n\nMIT License\n\nCopyright (c) 2024 Michael Pfister", version);
         let _ = window.app_handle().dialog()
-            .message("MIT License\n\nCopyright (c) 2024 Michael Pfister")
+            .message(message)
             .title("About")
             .parent(&window)
             .blocking_show();
