@@ -5,6 +5,7 @@ import { EditorToolbar } from "../components/EditorToolbar.jsx";
 import { useEditor } from "../hooks/useEditor.js";
 import { useNotifications } from "../hooks/useNotifications.js";
 import { useFileExport } from "../hooks/useFileExport.js";
+import { useKeyboardShortcut } from "../hooks/useKeyboardShortcut.js";
 
 export function EditorPage() {
   const { note, isSaved, loading, menuEvent, updateNoteContent, saveNote } =
@@ -47,6 +48,9 @@ export function EditorPage() {
   const handleContentChange = (value) => {
     updateNoteContent({ note_text: value });
   };
+
+  // Keyboard shortcut for saving (Ctrl+S / Cmd+S)
+  useKeyboardShortcut('s', handleSave, { ctrl: true });
 
   if (loading) {
     return (

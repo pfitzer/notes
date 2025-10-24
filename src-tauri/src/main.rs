@@ -28,14 +28,20 @@ fn main() {
             .build())
         .setup(|app| {
             let quit = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?;
+            let help = MenuItem::with_id(app, "help", "Help", true, None::<&str>)?;
             let about = MenuItem::with_id(app, "about", "About", true, None::<&str>)?;
-            let menu = Menu::with_items(app, &[&about, &quit])?;
+            let menu = Menu::with_items(app, &[&help, &about, &quit])?;
 
             app.set_menu(menu)?;
             app.on_menu_event(move |app, event| {
                 match event.id().as_ref() {
                     "quit" => {
                         std::process::exit(0);
+                    }
+                    "help" => {
+                        if let Some(window) = app.get_webview_window("main") {
+                            call_help(window);
+                        }
                     }
                     "about" => {
                         if let Some(window) = app.get_webview_window("main") {
@@ -82,6 +88,44 @@ fn call_about(window: tauri::WebviewWindow) {
         let _ = window.app_handle().dialog()
             .message(message)
             .title("About")
+            .parent(&window)
+            .blocking_show();
+    });
+}
+
+fn call_help(window: tauri::WebviewWindow) {
+    tauri::async_runtime::spawn(async move {
+        let help_text = "\
+📝 Notes Application - Usage Instructions
+
+BASIC FEATURES:
+• Create, edit, and manage notes with Markdown support
+• Search through your notes
+• Export notes to files
+• Copy note content to clipboard
+• Multiple editor windows support
+
+KEYBOARD SHORTCUTS:
+
+Notes List Page:
+  Ctrl/Cmd + N    Create a new note
+  Ctrl/Cmd + F    Focus on search input
+
+Editor Page:
+  Ctrl/Cmd + S    Save the current note
+
+TIPS:
+• Notes are automatically stored in a local SQLite database
+• Use Markdown formatting for rich text editing
+• The editor shows an asterisk (*) when there are unsaved changes
+• Closing an editor with unsaved changes will prompt for confirmation
+
+For more information, visit:
+https://github.com/pfitzer/notes";
+
+        let _ = window.app_handle().dialog()
+            .message(help_text)
+            .title("Help")
             .parent(&window)
             .blocking_show();
     });

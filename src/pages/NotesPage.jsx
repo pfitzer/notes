@@ -1,13 +1,16 @@
+import { useRef } from "react";
 import { Button } from "../components/Button.jsx";
 import { Input } from "../components/Input.jsx";
 import { NotesList } from "../components/NotesList.jsx";
 import { PlusIcon } from "../components/icons/PlusIcon.jsx";
 import { useNotes } from "../hooks/useNotes.js";
 import { useWindowManager } from "../hooks/useWindowManager.js";
+import { useKeyboardShortcuts } from "../hooks/useKeyboardShortcut.js";
 
 export function NotesPage() {
   const { notes, handleSearch, createNote, removeNote } = useNotes();
   const { openWindow } = useWindowManager();
+  const searchInputRef = useRef(null);
 
   const handleAddNote = async () => {
     await createNote();
@@ -25,6 +28,24 @@ export function NotesPage() {
     handleSearch(e.target.value);
   };
 
+  // Keyboard shortcuts
+  useKeyboardShortcuts([
+    {
+      key: 'n',
+      ctrl: true,
+      callback: handleAddNote,
+    },
+    {
+      key: 'f',
+      ctrl: true,
+      callback: () => {
+        if (searchInputRef.current) {
+          searchInputRef.current.focus();
+        }
+      },
+    },
+  ]);
+
   return (
     <div className="bg-gray-700 h-screen p-2">
       <div className="flex flex-row justify-between items-center">
@@ -34,6 +55,7 @@ export function NotesPage() {
         </Button>
       </div>
       <Input
+        ref={searchInputRef}
         placeholder="search"
         className="my-2 w-full"
         size="sm"

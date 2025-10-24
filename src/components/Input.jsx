@@ -1,11 +1,13 @@
-export function Input({
+import { forwardRef } from 'react';
+
+export const Input = forwardRef(function Input({
   value,
   onChange,
   placeholder,
   size = "md",
   className = "",
   ...props
-}) {
+}, ref) {
   const sizeClasses = {
     sm: "input-sm",
     md: "",
@@ -14,6 +16,7 @@ export function Input({
 
   return (
     <input
+      ref={ref}
       className={`input ${sizeClasses[size]} ${className}`}
       value={value}
       onChange={onChange}
@@ -21,4 +24,4 @@ export function Input({
       {...props}
     />
   );
-}
+});
