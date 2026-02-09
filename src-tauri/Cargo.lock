@@ -4106,6 +4106,7 @@ dependencies = [
  "tokio-stream",
  "tracing",
  "url",
+ "uuid",
 ]
 
 [[package]]
@@ -4186,6 +4187,7 @@ dependencies = [
  "thiserror 2.0.17",
  "time",
  "tracing",
+ "uuid",
  "whoami",
 ]
 
@@ -4224,6 +4226,7 @@ dependencies = [
  "thiserror 2.0.17",
  "time",
  "tracing",
+ "uuid",
  "whoami",
 ]
 
@@ -4250,6 +4253,7 @@ dependencies = [
  "time",
  "tracing",
  "url",
+ "uuid",
 ]
 
 [[package]]
@@ -4663,9 +4667,9 @@ dependencies = [
 
 [[package]]
 name = "tauri-plugin-sql"
-version = "2.3.1"
+version = "2.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8a593f08c357091ba802a388d1161e99f05751278fb7204faeb08520da579a7c"
+checksum = "27454a5476feb6ea78d74d0f07085fc8a5e97565d7ae825373011fd27ec30303"
 dependencies = [
  "futures-core",
  "indexmap 2.12.0",
@@ -4678,6 +4682,7 @@ dependencies = [
  "thiserror 2.0.17",
  "time",
  "tokio",
+ "uuid",
 ]
 
 [[package]]
