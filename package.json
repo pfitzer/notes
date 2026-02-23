@@ -39,7 +39,7 @@
     "@vitest/coverage-v8": "^4.0.3",
     "@vitest/ui": "^4.0.3",
     "autoprefixer": "^10.4.24",
-    "daisyui": "^5.5.18",
+    "daisyui": "^5.5.19",
     "jsdom": "^28.1.0",
     "postcss": "^8.5.3",
     "tailwindcss": "^4.1.14",
